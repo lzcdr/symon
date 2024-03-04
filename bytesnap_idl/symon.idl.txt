@@ -1,0 +1,18 @@
+const SIGNATURE = 0xdeadbeef
+
+struct Request {
+    signature: uint32_t = SIGNATURE
+}
+
+struct Response {
+    signature: uint32_t = SIGNATURE
+    total_ram: uint64_t
+    free_ram: uint64_t
+    total_disk_space: uint64_t
+    free_disk_space: uint64_t
+    cpu_utilisation: double
+}
+
+service Symon {
+    query: Request -> Response
+}
