@@ -57,11 +57,19 @@ set(SYMON_SERVER_SOURCE_FILES ${SERVER_SOURCE_FILES}
     symon_query.hpp symon_query.cpp
 )
 add_executable(${SYMON_SERVER_PROJECT_NAME} ${SYMON_SERVER_SOURCE_FILES})
+if (WIN32)
 target_link_libraries(${SYMON_SERVER_PROJECT_NAME} PUBLIC Boost::boost pdh)
+else ()
+target_link_libraries(${SYMON_SERVER_PROJECT_NAME} PUBLIC Boost::boost)
+endif()
 
 set(SYMON_CLIENT_SOURCE_FILES ${CLIENT_SOURCE_FILES}
     symon_client.hpp symon_client.cpp symon_client_test.cpp
     symon_query.hpp symon_query.cpp
 )
 add_executable(${SYMON_CLIENT_PROJECT_NAME} ${SYMON_CLIENT_SOURCE_FILES})
+if (WIN32)
 target_link_libraries(${SYMON_CLIENT_PROJECT_NAME} PUBLIC Boost::boost pdh)
+else ()
+target_link_libraries(${SYMON_CLIENT_PROJECT_NAME} PUBLIC Boost::boost)
+endif()

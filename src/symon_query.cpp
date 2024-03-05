@@ -24,6 +24,11 @@
 #include <sys/statvfs.h>
 #include <sys/times.h>
 #include <unistd.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <thread>
 #endif
 
 namespace symon {
@@ -47,17 +52,14 @@ double symon_query_message_processor::get_cpu_load()
     PdhGetFormattedCounterValue(cpuTotal, PDH_FMT_DOUBLE, NULL, &counterVal);
     return counterVal.doubleValue;    
 #else
-    clock_t user, nice, system, idle;
-    struct tms timeSample;
-    if (times(&timeSample) < 0) {
-        perror("times");
-        return 1;
-    }
-    user = timeSample.tms_utime;
-    nice = timeSample.tms_stime;
-    system = timeSample.tms_cstime;
-    idle = timeSample.tms_idle;
-    return ((user + nice + system) * 100.0) / (user + nice + system + idle);
+    std::ifstream file("/proc/loadavg");
+    std::string line;
+    std::getline(file, line);
+    std::istringstream ss(line);
+    double loadAvg1, loadAvg5, loadAvg15;
+    ss >> loadAvg1 >> loadAvg5 >> loadAvg15;
+    int numCores = std::thread::hardware_concurrency();
+    return (loadAvg1 / numCores) * 100.0;
 #endif
 }
 
@@ -83,7 +85,7 @@ void symon_query_message_processor::get_system_metrics(Response& response)
     struct sysinfo info;
     if (sysinfo(&info) != 0) {
         perror("sysinfo");
-        return 1;
+        return;
     }
     response.total_ram = info.totalram;
     response.free_ram = info.freeram;
@@ -92,7 +94,7 @@ void symon_query_message_processor::get_system_metrics(Response& response)
     struct statvfs stat;
     if (statvfs("/", &stat) != 0) {
         perror("statvfs");
-        return 1;
+        return;
     }
     response.total_disk_space = stat.f_frsize * stat.f_blocks;
     response.free_disk_space = stat.f_frsize * stat.f_bavail;

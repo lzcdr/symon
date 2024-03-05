@@ -90,7 +90,9 @@ struct message_processor_base
      * @return message_error_code 
      */
     message_error_code operator()(const buffer& input, buffer& output)
-    {}
+    {
+        return message_error_code::OK;
+    }
 };
 
 } // namespace vst
