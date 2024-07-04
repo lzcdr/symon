@@ -1,5 +1,5 @@
 # symon
-Tiny Command Line Interface Remote System Monitor.
+Tiny command line remote system monitor.
 
 ## How to use
 
